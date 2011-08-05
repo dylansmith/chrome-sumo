@@ -1,4 +1,6 @@
+var rgx = new RegExp("^http:\/\/[\w\-]+\.google\.[^\/]+\/imgres\\?imgurl=([^\&]+)", "ig");
 var loc = String(window.location);
-loc = loc.split('imgres?imgurl=')[1];
-loc = loc.split('&imgrefurl=')[0];
-window.location = loc;
+var m = rgx.exec(loc);
+if (m != null && m.length == 2) {
+	window.location = m[1];
+}
