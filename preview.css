@@ -1,0 +1,14 @@
+#stffgi-preview {
+  background-position:0 50%;
+  background-repeat:no-repeat;
+  margin:0.4em 1em;
+  padding:1em 1em 1em 48px;
+  line-height:18px;
+  font-size:14px;
+  font-family:arial, sans-serif;
+  border:#f1f1f1;
+}
+
+#stffgi-preview a {
+  color:#11c;
+}
