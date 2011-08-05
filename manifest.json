@@ -1,6 +1,6 @@
 {
   "name": "Google Images: Straight to Full-Size",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Bypass preview & go directly to the full-size image from the Google Images search result page.",
   "run_at": "document_start",
   "icons": {
@@ -10,7 +10,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/imgres?imgurl=*"],
+      "matches": ["http://*/imgres?imgurl=*", "https://*/imgres?imgurl=*"],
       "js": ["contentscript.js"]
     }
   ]
