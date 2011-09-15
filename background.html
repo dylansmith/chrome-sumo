@@ -1,32 +1,22 @@
 <html>
   <script>
   var bypassEnabled = true, log = {};
-  
+
   function onTabUpdated(tabId, changeInfo, tab) {
-    var l = getLog(tab);
-    if (l && l.imgurl == tab.url && tab.status === 'loading') {
-      processImagePreview(tab);
-    } else {
-      if (bypassEnabled === true && tab.status === 'loading') processTab(tab);
-    }
+    if (bypassEnabled === true && tab.status === 'loading') processTab(tab);
 	}
-  
-  function processImagePreview(tab) {
-    chrome.tabs.insertCSS(tab.id, {file: "preview.css"});
-    chrome.tabs.executeScript(tab.id, {file: "preview.js"});
-  }
-  
+
 	function processTab(tab)
 	{
-    var l, m, rgx, qs, qsh, i, p, imgurl, imgrefurl;
-    
-		if (!tab.url || tab.url.length < 1) return;
-    
+    var l, m, rgx, qs, qsh, i, p, imgurl, imgrefurl, el;
+
+    if (!tab.url || tab.url.length < 1) return;
+
     // if this tab already has a log for this url, don't bypass again;
     // this allows the user to go "Back" to the Google Images preview
     l = getLog(tab);
     if (l !== null && l.origurl === tab.url) return;
-    
+
     // test for bypass and create log if found
     rgx = new RegExp('^http:\/\/[^\.]+\.google\.[^\/]+\/(imgres|imglanding)\\?(.*)', 'ig');
 		m = rgx.exec(tab.url);
@@ -38,88 +28,96 @@
 				p = qs[i].split('=');
 				qsh[p[0]] = p[1];
 			}
-			
-			imgurl = qsh[m[1]] || qsh.imgurl || qsh.imglanding;
+			imgurl = qsh[m[1]] || qsh.imgurl || qsh.imglanding || null;
 			imgrefurl = qsh.imgrefurl || null;
-      
-			setLog(tab, {
+
+      setLog(tab, {
         tab: tab,
         imgurl: imgurl,
         imgrefurl: imgrefurl,
         origurl: tab.url
       });
-      
+
       bypassTab(tab);
 		}
 	}
-  
+
   function bypassTab(tab) {
+    // if the tab log has an imgurl, use it
     var l = getLog(tab);
-    if (l && l.imgurl) chrome.tabs.update(tab.id, {url: l.imgurl});
+    if (l && l.imgurl) {
+      chrome.tabs.update(tab.id, {url: l.imgurl});
+    }
+    // otherwise send a message to the content script
+    else {
+      chrome.tabs.sendRequest(tab.id, {attemptBypass: true});
+    }
   }
-  
+
   function revertTab(tab) {
     var l = getLog(tab);
     if (l && l.origurl) chrome.tabs.update(tab.id, {url: l.origurl});
   }
-  
+
   function getLog(tab) {
     if (tab && tab.id && log[tab.id]) {
       return log[tab.id];
     }
     return null;
   }
-  
+
   function setLog(tab, data) {
     log[tab.id] = data;
   }
-  
+
   function clearLog() {
     log = {};
   }
-  
+
   function removeLog(tabId) {
     delete log[tabId];
   }
-  
+
   function disableBypass() {
     bypassEnabled = false;
     chrome.browserAction.setIcon({path: "icon32-off.png"});
     chrome.browserAction.setTitle({title: 'Click to enable & bypass Google Images™ previews'});
   }
-  
+
   function enableBypass() {
     bypassEnabled = true;
     chrome.browserAction.setIcon({path: "icon32.png"});
     chrome.browserAction.setTitle({title: 'Click to disable & use Google Images™ previews'});
   }
-  
+
+  // handle tab update events
   chrome.tabs.onUpdated.addListener(onTabUpdated);
-  
+
+  // clear tab logs when the tab is closed
   chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
     removeLog(tabId);
   });
-  
+
+  // handle the toolbar toggle button
   chrome.browserAction.onClicked.addListener(function(tab) {
     if (bypassEnabled === true) {
       disableBypass();
-      revertTab(tab);
+      //revertTab(tab);
       clearLog();
     } else {
       enableBypass();
       processTab(tab);
     }
   });
-  
+
+  // handle messages from content scripts
   chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-    if (request == "getUrls" && sender.tab) {
-      var urls = getLog(sender.tab);
-      (urls) ? sendResponse(urls) : sendResponse(null);
-    } else {
-      sendResponse(null);
+    // return whether the current tab should be bypassed
+    if (request === 'bypassCandidate') {
+      sendResponse(bypassEnabled && (getLog(sender.tab) !== null));
     }
   });
-  
+
   enableBypass();
   </script>
 </html>
