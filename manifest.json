@@ -1,22 +1,23 @@
-﻿{
+{
   "name": "Straight to Full-Size for Google Images™",
-  "version": "1.5",
+  "version": "1.6",
+  "manifest_version": 2,
+
   "description": "Bypass preview & go directly to the full-size image from the Google Images search result page.",
-  "run_at": "document_start",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*"],
-      "js": ["content.js"]
-    }
-  ],
-  "permissions": ["history", "tabs", "http://*/*"],
-  "background_page": "background.html",
+
   "browser_action": {
     "default_icon": "icon32.png"
-  }
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "web_accessible_resources": [
+    "icon32.png"
+  ],
+  "permissions": ["history", "tabs", "http://*/*"]
 }
