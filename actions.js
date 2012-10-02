@@ -1,14 +1,20 @@
-function createActionLinks(tabLog) {
+function createActionLinks() {
   var panel = document.createElement('div'), bgUrl = chrome.extension.getURL("icon32.png"), html;
   panel.setAttribute('id', 'stffgi');
   html = '<div id="stffgi-actions" style="background-image:url(' + bgUrl + ');">';
-  html += '<a href="' + tabLog.contextPageUrl + '">View original website</a>';
-  html += '<br/><a href="javascript:history.go(-1);">Back to Google Images preview</a>';
+  html += '<a id="stggfi-action-context" href="javascript:void(0);">View original website</a><br/>';
+  html += '<a id="stggfi-action-revert" href="javascript:void(0);">View Google Images preview</a>';
   html += '</div>';
   panel.innerHTML = html;
   document.body.appendChild(panel);
+
+  document.getElementById('stggfi-action-revert').addEventListener('click', function() {
+    chrome.extension.sendMessage("actions.revert");
+  });
+
+  document.getElementById('stggfi-action-context').addEventListener('click', function() {
+    chrome.extension.sendMessage("actions.context");
+  });
 }
 
-chrome.extension.sendMessage("getTabLog", function(tabLog) {
-  if (tabLog) createActionLinks(tabLog);
-});
+createActionLinks();

@@ -12,13 +12,15 @@
     }
     this.tab = tab;
     this.originalUrl = tab.url;
+    this.override = false;
   };
   TabLog.prototype = {
     // properties
     originalUrl: null,
     imageUrl: null,
     contextPageUrl: null,
-    tab: null
+    tab: null,
+    override: null
   };
 
   TabRegister = function() {
@@ -34,6 +36,7 @@
 
     // methods
     add: function(tabLog) {
+      var log = this._store[tabLog.tab.id];
       this._store[tabLog.tab.id] = tabLog;
     },
 
@@ -52,8 +55,14 @@
     bypass: function(tabId) {
       if (this.bypassEnabled() === false) return;
       var log = this.get(tabId);
-      if (log && log.imageUrl) {
-        chrome.tabs.update(tabId, {url: log.imageUrl});
+      if (log && log.imageUrl)
+      {
+        chrome.tabs.get(tabId, function(tab)
+        {
+          // only revert from the orignalUrl
+          if (tab.url !== log.originalUrl) return;
+          chrome.tabs.executeScript(tabId, {code: "window.location='"+log.imageUrl+"';"});
+        });
       }
     },
 
@@ -61,13 +70,34 @@
       var log = this.get(tabId);
       if (log && log.originalUrl)
       {
-        // If the browser button is toggled on and off, reverting using
-        // chrome.tabs.update adds an entry to the history instead of going back.
-        // This meaning the user has to click Back more than they should to
-        // return the the Google Images search results. Need to find a
-        // better solution here.
+        chrome.tabs.get(tabId, function(tab)
+        {
+          // only revert from the imageUrl
+          if (tab.url !== log.imageUrl) return;
 
-        //chrome.tabs.update(tabId, {url: log.originalUrl});
+          // set a per-tab override and go back to the Google preview
+          log.override = true;
+          chrome.tabs.executeScript(tabId, {code: "window.location='"+log.originalUrl+"#ignore';"});
+        });
+      }
+    },
+
+    requestOverride: function(tabId) {
+      var log = this.get(tabId);
+      if (log) {
+        // log.override only lasts for 1 request
+        if (log.override === true) {
+          log.override = false;
+          return true;
+        }
+      }
+      return false;
+    },
+
+    showContextPage: function(tabId) {
+      var log = this.get(tabId);
+      if (log && log.contextPageUrl) {
+        chrome.tabs.executeScript(tabId, {code: "window.location='"+log.contextPageUrl+"';"});
       }
     },
 
@@ -104,14 +134,33 @@
 
     if (!tab.url || tab.url.length < 1) return;
 
-    // if this tab already has a log for this url, don't bypass again;
-    // this allows the user to go "Back" to the Google Images preview
+    // respect bypass override on a per-tab basis
+    if (register.requestOverride(tab.id) === true) {
+      return;
+    }
+
+    // check for an existing log
     log = register.get(tab.id);
     if (log)
     {
-      if (log.originalUrl === tab.url) {
+      // if we have landed on the google image preview url, and no override
+      // flag existed in the check above, then we need to bypass it either
+      // forwards or backwards, depending on the referrer
+      if (log.originalUrl === tab.url)
+      {
+        chrome.history.search({text:""}, function(results) {
+          var last = results[0];
+          if (last.url === log.imageUrl) {
+            chrome.tabs.executeScript(tabId, {code: "window.history.back()"});
+          }
+          else {
+            chrome.tabs.executeScript(tabId, {code: "window.history.forward()"});
+          }
+        });
         return;
       }
+
+      // if the new tab url is the bypassed, pure image url, add the content actions
       if (log.imageUrl === tab.url) {
         addContentActions(tab);
         return;
@@ -138,7 +187,8 @@
   {
     var m, rgx, qs, qsh, i, p, imgurl, imgrefurl, output = false;
 
-    rgx = new RegExp("^http:\/\/[^\\.]+\\.google\\.[^\/]+\/(imgres|imglanding)\\?(.*)", 'ig');
+    if (url.substr(-7, 7) === '#ignore') return;
+    rgx = /^http:\/\/[^\.]+\.google\.[^\/]+\/(imgres|imglanding)\?(.*)$/ig;
     m = rgx.exec(url);
     if (m !== null && m.length === 3)
     {
@@ -172,17 +222,25 @@
     if (register.bypassEnabled() === true) {
       register.revert(tab.id);
       register.disableBypass();
+      register.wipe();
     } else {
       register.enableBypass();
-      register.bypass(tab.id);
+      processTab(tab);
     }
   });
 
   // content script message listener
   chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
   {
-    if (request === 'getTabLog') {
-      sendResponse(register.get(sender.tab.id));
+    switch (request)
+    {
+      case 'actions.revert':
+        register.revert(sender.tab.id);
+        break;
+
+      case 'actions.context':
+        register.showContextPage(sender.tab.id);
+        break;
     }
   });
 
