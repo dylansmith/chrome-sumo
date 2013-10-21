@@ -13,8 +13,14 @@
   "browser_action": {
     "default_icon": "icons/32.png"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*.google.com/search?*", "https://*.google.com/search?*"],
+      "js": ["js/content.js"]
+    }
+  ],
   "background": {
-    "scripts": ["js/background.js"]
+    //"scripts": ["js/background.js"]
   },
   "web_accessible_resources": [
     "icons/32.png"
