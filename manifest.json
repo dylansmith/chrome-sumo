@@ -2,10 +2,11 @@
   "name": "Straight to Full-Size for Google Images™",
   "version": "2.0",
   "manifest_version": 2,
-
   "description": "Bypass preview & go directly to the full-size image from the Google Images search result page.",
+
   "icons": {
     "16": "icons/16.png",
+    "32": "icons/32.png",
     "48": "icons/48.png",
     "128": "icons/128.png"
   },
@@ -13,17 +14,26 @@
   "browser_action": {
     "default_icon": "icons/32.png"
   },
+
   "content_scripts": [
     {
-      "matches": ["http://*.google.com/search?*", "https://*.google.com/search?*"],
-      "js": ["js/content.js"]
+      "js": ["js/content.js"],
+      "matches": [
+        "http://*/search?*",
+        "http://*/imgres?*",
+        "https://*/search?*",
+        "https://*/imgres?*"
+      ]
     }
   ],
+
   "background": {
-    //"scripts": ["js/background.js"]
+    "scripts": ["js/background.js"]
   },
+
   "web_accessible_resources": [
     "icons/32.png"
   ],
+
   "permissions": ["history", "tabs", "http://*/*"]
 }
