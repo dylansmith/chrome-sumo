@@ -15,14 +15,15 @@ Thanks!
 Description
 -----------
 
-Google Images forces you through an intermediate preview step/page when trying to view an image from their images search result page.
+Google Images forces you through an intermediate preview step when trying to view an image from their images search result page.
 
-In many (if not most) cases, people just want to go directly to the URL of the fullsize image. This extension detects when your browser has arrived at a Google Images preview page and auto-forwards you directly to the full-size image URL.
-
-The functionality is similar to other "Google Images relinker" extensions, except that it does not modify the search results page itself.
+Sometimes, I'd prefer to just go directly to the URL of the fullsize image. This extension detects when your browser has arrived at a Google Images preview page and provides a simpler way to get at the full-size image.
 
 Changelog
 ---------
+
+Version 2.0 (in development)
+- Updating the source code to work with Google's new search results page format.
 
 Version 1.6 (2 October 2012)
 - Updated the manifest file to the new format (was preventing the extension from being installed)
