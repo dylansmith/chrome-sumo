@@ -108,14 +108,14 @@
     enableBypass: function() {
       if (this.bypassEnabled() === true) return;
       this._bypassEnabled = true;
-      chrome.browserAction.setIcon({path: "icon32.png"});
+      chrome.browserAction.setIcon({path: "icons/32.png"});
       chrome.browserAction.setTitle({title: 'Click to disable & use Google Images™ previews'});
     },
 
     disableBypass: function() {
       if (this.bypassEnabled() === false) return;
       this._bypassEnabled = false;
-      chrome.browserAction.setIcon({path: "icon32-off.png"});
+      chrome.browserAction.setIcon({path: "icons/32off.png"});
       chrome.browserAction.setTitle({title: 'Click to enable & bypass Google Images™ previews'});
     }
   };

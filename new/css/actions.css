@@ -1,0 +1,21 @@
+#stffgi {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
+}
+
+#stffgi-actions {
+  padding:12px 20px 12px 60px;
+  background-position:12px 12px;
+  background-repeat:no-repeat;
+  background-color: #fff;
+  border-radius: 12px;
+  font-size:14px;
+  font-family:arial, sans-serif;
+}
+
+#stffgi-actions a {
+  color:#11c;
+  line-height:1.4em;
+}
