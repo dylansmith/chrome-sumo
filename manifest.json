@@ -2,7 +2,7 @@
   "name": "Straight to Full-Size for Google Images™",
   "version": "2.0",
   "manifest_version": 2,
-  "description": "Bypass preview & go directly to the full-size image from the Google Images search result page.",
+  "description": "Bypass preview & go directly to the full-size image from the Google Images™ search results page.",
 
   "icons": {
     "16": "icons/16.png",
@@ -19,10 +19,8 @@
     {
       "js": ["js/content.js"],
       "matches": [
-        "http://*/search?*",
-        "http://*/imgres?*",
-        "https://*/search?*",
-        "https://*/imgres?*"
+        "http://*/search?*", "http://*/imgres?*",
+        "https://*/search?*", "https://*/imgres?*"
       ]
     }
   ],

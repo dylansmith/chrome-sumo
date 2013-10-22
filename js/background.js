@@ -1,4 +1,11 @@
-var SumoBackground = {
+/**
+ * Straight to Full-Size for Google Images™
+ * ----------------------------------------
+ * This file contains a background script which handles extension-level functionality
+ * and passes data to and from content scripts using message passing.
+ */
+
+var SumoApplication = {
 
   config: {
     disabled: false
@@ -10,7 +17,7 @@ var SumoBackground = {
     // handle incoming messages from content scripts
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if (sender.tab && request === 'sumo.get_config') {
-        this.broadcastMessage({'config': this.config});
+        if (sendResponse) sendResponse(this.config);
       }
     }.bind(this));
 
@@ -44,4 +51,4 @@ var SumoBackground = {
 
 };
 
-SumoBackground.init();
+SumoApplication.init();
