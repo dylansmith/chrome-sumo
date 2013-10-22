@@ -15,6 +15,10 @@
     "default_icon": "icons/32.png"
   },
 
+  "background": {
+    "scripts": ["js/background.js"]
+  },
+
   "content_scripts": [
     {
       "js": ["js/content.js"],
@@ -25,13 +29,5 @@
     }
   ],
 
-  "background": {
-    "scripts": ["js/background.js"]
-  },
-
-  "web_accessible_resources": [
-    "icons/32.png"
-  ],
-
-  "permissions": ["history", "tabs", "http://*/*"]
+  "permissions": ["http://*/*"]
 }
