@@ -1,8 +1,8 @@
 {
-  "name": "Straight to Full-Size for Google Images™",
+  "name": "Straight to Full-Size for Google Images",
   "version": "2.0",
   "manifest_version": 2,
-  "description": "Changes the behaviour of Google Images™ search results so that clicking on an image thumbnail takes you directly to the full-size image URL.",
+  "description": "Changes the behaviour of Google Images so that clicking on an image thumbnail takes you directly to the full-size image.",
 
   "icons": {
     "16": "icons/16.png",

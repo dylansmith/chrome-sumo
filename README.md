@@ -22,8 +22,8 @@ Sometimes, I'd prefer to just go directly to the URL of the fullsize image. This
 Changelog
 ---------
 
-Version 2.0 (in development)
-- Updating the source code to work with Google's new search results page format.
+Version 2.0 (6 November 2013)
+- Updated to work with Google's new search results page format.
 
 Version 1.6 (2 October 2012)
 - Updated the manifest file to the new format (was preventing the extension from being installed)
