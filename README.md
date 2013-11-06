@@ -24,6 +24,7 @@ Changelog
 
 Version 2.0 (6 November 2013)
 - Updated to work with Google's new search results page format.
+- Significant re-write and simplification of the codebase.
 
 Version 1.6 (2 October 2012)
 - Updated the manifest file to the new format (was preventing the extension from being installed)
